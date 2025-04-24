@@ -32,8 +32,6 @@ export async function signupUser(username: string, password: string) {
 
 export async function loginUser(username: string, password: string) {
   try {
-    const StoreCookie = await cookies();
-
     const user = await prisma.user.findUnique({
       where: { username },
     });
@@ -43,28 +41,31 @@ export async function loginUser(username: string, password: string) {
     }
 
     const passwordValid = await comparePasswords(password, user.password);
-
     if (!passwordValid) {
       return { success: false, error: "Invalid username or password" };
     }
 
-    const oneWeek = 7 * 24 * 60 * 60 * 1000;
-    StoreCookie.set({
-      name: "session",
-      value: user.id,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: oneWeek,
-      path: "/",
-    });
-
-    return { success: true, userId: user.id };
+    // Return the cookie to be set in the client
+    return { 
+      success: true, 
+      userId: user.id,
+      cookie: {
+        name: "session",
+        value: user.id,
+        options: {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          maxAge: 7 * 24 * 60 * 60, // 1 week in seconds
+          path: "/",
+          sameSite: "lax"
+        }
+      }
+    };
   } catch (error) {
     console.error("Login error:", error);
     return { success: false, error: "Failed to login" };
   }
 }
-
 export async function getUserFromSession() {
   try {
     const StoreCookie = await cookies();

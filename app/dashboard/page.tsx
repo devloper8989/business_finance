@@ -41,21 +41,40 @@ export default function Dashboard() {
   });
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [user,setUser]=useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [transactionsPerPage] = useState(5); // Number of transactions per page
-  const [user, setUser] = useState<any>(null);
+  const [transactionsPerPage] = useState(5);
+  const [userId, setUserId] = useState<string | null>(null);
 
+  // Fetch user ID first
   useEffect(() => {
-    loadData();
+    const fetchUser = async () => {
+      const currentUser = await getCurrentUser();
+      if (currentUser?.id) {
+        setUserId(currentUser.id);
+      }
+    };
+    fetchUser();
   }, []);
+
+  // Load data only when userId is available
+  useEffect(() => {
+    if (userId) {
+      loadData();
+    }
+  }, [userId]);
 
   const loadData = async () => {
     try {
       setLoading(true);
       const [transactionsData, balanceData] = await Promise.all([
-        getTransactions(),
-        getBalanceSummary(),
+        getTransactions(userId!), // Non-null assertion since we check userId
+        getBalanceSummary(userId!),
       ]);
+      
+      console.log("Fetched transactions:", transactionsData);
+      console.log("Fetched balance:", balanceData);
+      
       setTransactions(transactionsData);
       setBalance(balanceData);
     } catch (error) {
@@ -64,7 +83,6 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
-
   const handleAddTransaction = () => {
     setShowForm(true);
   };
