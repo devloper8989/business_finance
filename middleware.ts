@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
   const cookies = parse(request.headers.get('cookie') || '');
   const session = cookies.session;
 
-  const publicPaths = ['/login', '/register', '/'];
+  const publicPaths = ['/login', '/signup', '/'];
   const isPublicPath = publicPaths.includes(request.nextUrl.pathname);
 
   // Debug logs
