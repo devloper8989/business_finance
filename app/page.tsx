@@ -2,14 +2,7 @@ export default function HeroPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
         {/* Navigation */}
-        <nav className="container mx-auto p-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-indigo-600">BudgetTracker</h1>
-            <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
-              Sign Up Free
-            </button>
-          </div>
-        </nav>
+      
   
         {/* Hero Section */}
         <main className="container mx-auto px-6 py-20 flex flex-col items-center text-center">
